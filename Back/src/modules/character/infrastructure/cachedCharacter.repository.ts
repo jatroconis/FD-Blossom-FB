@@ -5,7 +5,6 @@ import { characterSearchKey } from '../../../infrastructure/cache/keys';
 
 const TTL = Number(process.env.CACHE_TTL_SECONDS ?? 60);
 
-/* agrega caché Redis sin modificar el contrato. */
 export class CachedCharacterRepository implements CharacterRepository {
     constructor(private readonly inner: CharacterRepository) { }
 
@@ -17,5 +16,15 @@ export class CachedCharacterRepository implements CharacterRepository {
         const data = await this.inner.search(filter);
         await cacheSet(key, data, TTL);
         return data;
+    }
+
+    async softDelete(id: number): Promise<boolean> {
+        //  se encarga de invalidar la caché
+        return this.inner.softDelete(id);
+    }
+
+    async restore(id: number): Promise<boolean> {
+        // se encarga de invalidar la caché
+        return this.inner.restore(id);
     }
 }

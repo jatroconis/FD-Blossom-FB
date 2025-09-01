@@ -54,6 +54,10 @@ const querySchema = z.object({
  *         name: origin
  *         schema: { type: string }
  *         description: Origen (contiene, case-insensitive)
+ *       - in: query
+ *         name: favorite            
+ *         schema: { type: boolean } 
+ *         description: true para solo favoritos, false para no-favoritos
  *     responses:
  *       200:
  *         description: Lista de personajes

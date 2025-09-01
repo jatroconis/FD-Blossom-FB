@@ -13,6 +13,7 @@ export interface CharacterAttributes {
     created_api?: string | null;
     createdAt?: Date;
     updatedAt?: Date;
+    deletedAt?: Date | null;
 }
 
 export type CharacterCreation = Optional<CharacterAttributes, 'id' | 'image' | 'created_api' | 'createdAt' | 'updatedAt'>;
@@ -27,8 +28,10 @@ export class CharacterModel extends Model<CharacterAttributes, CharacterCreation
     public origin!: string;
     public image!: string | null;
     public created_api!: string | null;
+    declare deleted_at: Date | null;
     public readonly createdAt!: Date;
     public readonly updatedAt!: Date;
+    public readonly deletedAt!: Date | null;
 }
 
 CharacterModel.init(

@@ -46,7 +46,8 @@ const options: swaggerJsdoc.Options = {
                         gender: { type: 'string', example: 'Male' },
                         origin: { type: 'string', example: 'Earth (C-137)' },
                         image: { type: 'string', nullable: true, example: 'https://...' },
-                        created: { type: 'string', nullable: true, example: '2017-11-04T18:48:46.250Z' }
+                        created: { type: 'string', nullable: true, example: '2017-11-04T18:48:46.250Z' },
+                        isFavorite: { type: 'boolean', example: true } // 👈
                     },
                     required: ['id', 'name', 'status', 'species', 'gender', 'origin']
                 },

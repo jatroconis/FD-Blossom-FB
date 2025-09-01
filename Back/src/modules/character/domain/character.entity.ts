@@ -8,6 +8,7 @@ export interface Character {
     origin: string;
     image?: string;
     created?: string;      // fecha/origen de la API pública 
+    isFavorite?: boolean;
 }
 
 // Filtros de búsqueda (reutilizados en Service/Repos)
@@ -17,4 +18,5 @@ export interface CharacterFilter {
     species?: string;
     gender?: string;
     origin?: string;
+    favorite?: boolean;
 }
