@@ -3,6 +3,7 @@ import cors from 'cors';
 import helmet from 'helmet';
 import { requestLogger } from './middlewares/requestLogger';
 import healthRoute from './health/health.route';
+import charactersRoute from './modules/character/presentation/rest/characters.route';
 
 export const buildApp = () => {
     const app = express();
@@ -13,6 +14,6 @@ export const buildApp = () => {
     app.use(requestLogger);
 
     app.use('/api', healthRoute);
-
+    app.use('/api/characters', charactersRoute);
     return app;
 };
