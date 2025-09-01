@@ -6,9 +6,11 @@ import { CachedCharacterRepository } from '../../infrastructure/cachedCharacter.
 import { characterSyncService } from '../../application/character.sync';
 import { env } from '../../../../config/env';
 
+import { UpstreamHttpError } from '../../../../shared/http/upstream-error';
+
 const router = Router();
 
-// Instanciamos Service con Repo cacheado (mismo stack que GraphQL)
+// Instanciamos Service con Repo cacheado 
 const baseRepo = new SequelizeCharacterRepository();
 const cachedRepo = new CachedCharacterRepository(baseRepo);
 const service = new ImplService(cachedRepo);
@@ -118,6 +120,15 @@ router.post('/sync', async (req, res) => {
         const result = await characterSyncService.syncAll();
         return res.json(result);
     } catch (err: any) {
+        if (err instanceof UpstreamHttpError) {
+            const s = err.status;
+            const msg = err.message || 'Upstream error';
+            if (s === 504) return res.status(504).json({ message: msg });
+            if (s === 503) return res.status(503).json({ message: msg });
+            if (s === 502) return res.status(502).json({ message: msg });
+            if (s === 429) return res.status(429).json({ message: 'Rate limited by upstream' });
+            return res.status(502).json({ message: msg });
+        }
         return res.status(500).json({ message: err?.message ?? 'Internal error' });
     }
 });

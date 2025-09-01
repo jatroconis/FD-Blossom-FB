@@ -12,7 +12,8 @@
         "types": [
             "node",
             "express"
-        ]
+        ],
+        "experimentalDecorators": true
     },
     "include": [
         "src/**/*"
