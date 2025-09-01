@@ -9,9 +9,9 @@ export class SequelizeCharacterRepository implements CharacterRepository {
     }): Promise<Character[]> {
         const where: any = {};
         if (filter.name) where.name = { [Op.iLike]: `%${filter.name}%` };
-        if (filter.status) where.status = filter.status;
+        if (filter.status) where.status = { [Op.iLike]: `${filter.status}` };  // igualdad CI
         if (filter.species) where.species = { [Op.iLike]: `%${filter.species}%` };
-        if (filter.gender) where.gender = filter.gender;
+        if (filter.gender) where.gender = { [Op.iLike]: `${filter.gender}` };  // igualdad CI
         if (filter.origin) where.origin = { [Op.iLike]: `%${filter.origin}%` };
 
         const rows = await CharacterModel.findAll({ where, limit: 100, order: [['id', 'ASC']] });
