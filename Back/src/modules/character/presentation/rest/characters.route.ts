@@ -3,6 +3,8 @@ import { z } from 'zod';
 import { CharacterService as ImplService } from '../../application/character.service';
 import { SequelizeCharacterRepository } from '../../infrastructure/sequelizeCharacter.repository';
 import { CachedCharacterRepository } from '../../infrastructure/cachedCharacter.repository';
+import { characterSyncService } from '../../application/character.sync';
+import { env } from '../../../../config/env';
 
 const router = Router();
 
@@ -85,4 +87,38 @@ router.get('/', async (req, res) => {
     }
 });
 
+
+/**
+ * @openapi
+ * /api/characters/sync:
+ *   post:
+ *     summary: Ejecutar sincronización con API pública
+ *     description: Requiere header `x-sync-secret` que coincida con `SYNC_SECRET` de entorno.
+ *     tags: [Characters]
+ *     security:
+ *       - SyncSecretHeader: []
+ *     parameters:
+ *       - in: header
+ *         name: x-sync-secret
+ *         required: true
+ *         schema: { type: string }
+ *         description: Secreto para autorización de la sincronización
+ *     responses:
+ *       200:
+ *         description: Resultado de sincronización
+ *       401:
+ *         description: No autorizado (faltó/incorrecto secreto)
+ */
+router.post('/sync', async (req, res) => {
+    const secret = req.headers['x-sync-secret'];
+    if (!env.syncSecret || secret !== env.syncSecret) {
+        return res.status(401).json({ message: 'Unauthorized' });
+    }
+    try {
+        const result = await characterSyncService.syncAll();
+        return res.json(result);
+    } catch (err: any) {
+        return res.status(500).json({ message: err?.message ?? 'Internal error' });
+    }
+});
 export default router;

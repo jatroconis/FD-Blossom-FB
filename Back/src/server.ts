@@ -14,6 +14,7 @@ import { expressMiddleware } from '@as-integrations/express5';
 import type { ExpressContextFunctionArgument } from '@as-integrations/express5';
 
 import { typeDefs, resolvers } from './modules/character/presentation/graphql';
+import { setupCron } from './infrastructure/scheduler/cron';
 
 interface GraphQLContext {
     requestId: string | null;
@@ -52,6 +53,9 @@ const bootstrap = async () => {
         express.json({ limit: '1mb' }),
         gqlMiddleware
     );
+
+    // ---- Cron (sync cada [hora configuradaa en el env] según .env) ----
+    setupCron();
 
     httpServer.listen(env.port, () => {
         logger.info(`HTTP listening on http://localhost:${env.port}`);

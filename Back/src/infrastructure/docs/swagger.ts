@@ -27,6 +27,14 @@ const options: swaggerJsdoc.Options = {
         },
         servers: [{ url: 'http://localhost:4000' }],
         components: {
+            securitySchemes: {
+                SyncSecretHeader: {
+                    type: 'apiKey',
+                    in: 'header',
+                    name: 'x-sync-secret',
+                    description: 'Secreto requerido para ejecutar la sincronización manual'
+                }
+            },
             schemas: {
                 Character: {
                     type: 'object',
