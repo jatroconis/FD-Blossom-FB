@@ -1,8 +1,8 @@
 import { gql } from "@apollo/client";
 
 export const GET_CHARACTERS = gql`
-  query GetCharacters {
-    characters {
+  query GetCharacters($filter: CharacterFilter) {
+    characters(filter: $filter) {
       id
       name
       species
@@ -25,7 +25,23 @@ export type Character = {
   image?: string | null;
   isFavorite?: boolean | null;
 };
-export type GetCharactersData = { characters: Character[] };
+
+export type CharacterFilterInput = {
+  name?: string;
+  status?: string;
+  species?: string;
+  gender?: string;
+  origin?: string;
+  favorite?: boolean;
+};
+
+export type GetCharactersVars = {
+  filter?: CharacterFilterInput;
+};
+
+export type GetCharactersData = {
+  characters: Character[];
+};
 
 // ---- Favoritos
 export const TOGGLE_FAVORITE = gql`
@@ -76,3 +92,19 @@ export const ADD_COMMENT = gql`
 
 export type AddCommentVars = { id: number; content: string };
 export type AddCommentData = { addComment: Comment };
+
+export const SOFT_DELETE = gql`
+  mutation SoftDelete($id: Int!) {
+    softDeleteCharacter(id: $id)
+  }
+`;
+export type SoftDeleteVars = { id: number };
+export type SoftDeleteData = { softDeleteCharacter: boolean };
+
+export const RESTORE_CHARACTER = gql`
+  mutation Restore($id: Int!) {
+    restoreCharacter(id: $id)
+  }
+`;
+export type RestoreVars = { id: number };
+export type RestoreData = { restoreCharacter: boolean };

@@ -28,13 +28,19 @@ export default function CharactersList() {
         <h1 className="text-2xl font-bold">Personajes</h1>
         <div className="flex gap-2">
           <button
-            className={`px-3 py-1 border rounded ${sortOrder === "asc" ? "bg-indigo-100" : ""}`}
+            className={`px-4 py-2 rounded-full border transition
+              ${sortOrder === "asc"
+                ? "bg-primary-600 text-white border-primary-600"
+                : "bg-white border-primary-600 text-primary-700 hover:bg-primary-100"}`}
             onClick={() => setSortOrder("asc")}
           >
             Orden A–Z
           </button>
           <button
-            className={`px-3 py-1 border rounded ${sortOrder === "desc" ? "bg-indigo-100" : ""}`}
+            className={`px-4 py-2 rounded-full border transition
+              ${sortOrder === "desc"
+                ? "bg-primary-600 text-white border-primary-600"
+                : "bg-white border-primary-600 text-primary-700 hover:bg-primary-100"}`}
             onClick={() => setSortOrder("desc")}
           >
             Orden Z–A

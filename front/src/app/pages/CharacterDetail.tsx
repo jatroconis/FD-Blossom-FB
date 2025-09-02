@@ -1,18 +1,29 @@
 import { useParams, Link } from "react-router-dom";
-import { GET_CHARACTERS, type GetCharactersData, type Character } from "../graphql/queries";
+import { GET_CHARACTERS, type GetCharactersData, type Character,
+         SOFT_DELETE, type SoftDeleteData, type SoftDeleteVars,
+         RESTORE_CHARACTER, type RestoreData, type RestoreVars } from "../graphql/queries";
 import FavoriteButton from "../components/FavoriteButton";
 import Comments from "../components/Comments";
-import { useQuery } from "@apollo/client/react";
+import { DetailSkeleton } from "../components/skeletons";
+import { useMutation, useQuery } from "@apollo/client/react";
 
 export default function CharacterDetail() {
   const { id } = useParams();
   const charId = Number(id);
+  const adminEnabled = import.meta.env.VITE_ENABLE_ADMIN === "1";
 
   const { data, loading, error } = useQuery<GetCharactersData>(GET_CHARACTERS);
-
   const character: Character | undefined = data?.characters.find(c => c.id === charId);
 
-  if (loading) return <p>Cargando personaje…</p>;
+  const [softDelete, { loading: deleting }] = useMutation<SoftDeleteData, SoftDeleteVars>(SOFT_DELETE, {
+    onCompleted() { /* podrías redirigir a / o mostrar toast */ },
+  });
+
+  const [restore, { loading: restoring }] = useMutation<RestoreData, RestoreVars>(RESTORE_CHARACTER, {
+    onCompleted() { /* idem */ },
+  });
+
+  if (loading) return <DetailSkeleton />;
   if (error) return <p className="text-red-600">Error al cargar: {error.message}</p>;
   if (!character) return (
     <section className="space-y-4">
@@ -41,7 +52,27 @@ export default function CharacterDetail() {
             <div><dt className="text-zinc-500">Origen</dt><dd className="font-medium">{character.origin ?? "—"}</dd></div>
           </dl>
 
-          <FavoriteButton id={character.id} isFavorite={character.isFavorite ?? false} />
+          <div className="flex gap-3">
+            <FavoriteButton id={character.id} isFavorite={character.isFavorite ?? false} />
+            {adminEnabled && (
+              <>
+                <button
+                  onClick={() => softDelete({ variables: { id: character.id } })}
+                  disabled={deleting}
+                  className="inline-flex items-center gap-2 rounded border px-3 py-1 bg-red-50 border-red-300 text-red-700 disabled:opacity-60"
+                >
+                  {deleting ? "Eliminando…" : "Soft Delete"}
+                </button>
+                <button
+                  onClick={() => restore({ variables: { id: character.id } })}
+                  disabled={restoring}
+                  className="inline-flex items-center gap-2 rounded border px-3 py-1 bg-emerald-50 border-emerald-300 text-emerald-700 disabled:opacity-60"
+                >
+                  {restoring ? "Restaurando…" : "Restore"}
+                </button>
+              </>
+            )}
+          </div>
         </div>
       </div>
 
