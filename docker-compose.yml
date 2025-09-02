@@ -1,19 +1,18 @@
-version: "3.9"
-
 services:
   postgres:
     image: postgres:16-alpine
     container_name: rm_postgres
+    restart: unless-stopped
     environment:
-      POSTGRES_DB: rickmorty
-      POSTGRES_USER: rm_user
-      POSTGRES_PASSWORD: rm_pass
+      POSTGRES_USER: ${DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASS:-postgres}
+      POSTGRES_DB: ${DB_NAME:-rickmorty}
     ports:
-      - "5432:5432"
+      - "${DB_PORT:-5432}:5432"
     volumes:
-      - postgres-data:/var/lib/postgresql/data
+      - ./docker-data/postgres:/var/lib/postgresql/data
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U rm_user -d rickmorty" ]
+      test: [ "CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB" ]
       interval: 5s
       timeout: 3s
       retries: 10
@@ -21,76 +20,23 @@ services:
   redis:
     image: redis:7-alpine
     container_name: rm_redis
+    restart: unless-stopped
     ports:
       - "6379:6379"
+    command: [ "redis-server", "--appendonly", "yes" ]
     volumes:
-      - redis-data:/data
-    healthcheck:
-      test: [ "CMD", "redis-cli", "ping" ]
-      interval: 5s
-      timeout: 3s
-      retries: 10
+      - ./docker-data/redis:/data
 
   pgadmin:
-    image: dpage/pgadmin4:8.10
+    image: dpage/pgadmin4:latest
     container_name: rm_pgadmin
-    depends_on:
-      postgres:
-        condition: service_healthy
+    restart: unless-stopped
     environment:
-      PGADMIN_DEFAULT_EMAIL: admin@example.com
-      PGADMIN_DEFAULT_PASSWORD: admin123
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
     ports:
-      - "5050:80"
+      - "${PGADMIN_PORT:-5050}:80"
+    depends_on:
+      - postgres
     volumes:
-      - pgadmin-data:/var/lib/pgadmin
-
-  api:
-    container_name: rm_api
-    build:
-      context: ./Back
-      dockerfile: Dockerfile
-    depends_on:
-      postgres:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
-    environment:
-      NODE_ENV: production
-      PORT: 4000
-      # DB (ajusta si tus var names en env.ts difieren)
-      DB_HOST: postgres
-      DB_PORT: 5432
-      DB_USER: rm_user
-      DB_PASSWORD: rm_pass
-      DB_NAME: rickmorty
-      # Redis
-      REDIS_HOST: redis
-      REDIS_PORT: 6379
-      # CORS
-      CORS_ORIGINS: http://localhost:8080,http://127.0.0.1:8080
-      # Secret para sync
-      SYNC_SECRET: secret
-    ports:
-      - "4000:4000"
-
-  web:
-    container_name: rm_web
-    build:
-      context: ./front
-      dockerfile: Dockerfile
-      args:
-        # Front compila apuntando al API interno de compose
-        VITE_API_URL: "http://api:4000/graphql"
-        VITE_REST_URL: "http://api:4000/api"
-        VITE_ENABLE_ADMIN: "0"
-    depends_on:
-      api:
-        condition: service_started
-    ports:
-      - "8080:8080"
-
-volumes:
-  postgres-data:
-  redis-data:
-  pgadmin-data:
+      - ./docker-data/pgadmin:/var/lib/pgadmin
