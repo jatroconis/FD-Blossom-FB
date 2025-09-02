@@ -38,9 +38,9 @@ export default function FavoriteButton({ id, isFavorite, size = "md" }: Props) {
     <button
       onClick={() => toggle({ variables: { id } })}
       disabled={loading}
-      className={`inline-flex items-center gap-2 rounded border px-3 py-1 ${
-        isFavorite ? "bg-emerald-100 border-emerald-300" : "bg-white border-zinc-300"
-      }`}
+      className={`inline-flex items-center gap-2 rounded-full border px-4 py-2 transition
+  ${isFavorite ? "bg-secondary-600/10 border-secondary-600 text-secondary-600"
+               : "bg-white border-primary-600 text-primary-700 hover:bg-primary-100"}`}
       title={isFavorite ? "Quitar de favoritos" : "Marcar como favorito"}
     >
       <span className={size === "sm" ? "text-base" : "text-lg"}>

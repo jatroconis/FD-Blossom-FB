@@ -23,8 +23,8 @@ export default function FilterBar({ value, onChange }: Props) {
     return () => clearTimeout(t);
   }, [local, onChange]);
 
-  const inputClass = "w-full border rounded px-3 py-2 bg-white";
-  const selectClass = "w-full border rounded px-3 py-2 bg-white";
+const inputClass = "w-full rounded-full border-zinc-300 bg-white px-4 py-2 placeholder:text-zinc-400 focus:border-primary-600 focus:ring-primary-600";
+const selectClass = "w-full rounded-full border-zinc-300 bg-white px-4 py-2 focus:border-primary-600 focus:ring-primary-600";
 
   return (
     <div className="grid gap-3 md:grid-cols-12">
@@ -71,10 +71,9 @@ export default function FilterBar({ value, onChange }: Props) {
       <label className="md:col-span-1 inline-flex items-center gap-2">
         <input
           type="checkbox"
+          className="rounded text-primary-600 focus:ring-primary-600"
           checked={local.favoriteOnly}
-          onChange={(e) =>
-            setLocal((s) => ({ ...s, favoriteOnly: e.target.checked }))
-          }
+          onChange={(e) => setLocal((s) => ({ ...s, favoriteOnly: e.target.checked }))}
         />
         <span className="text-sm">Favoritos</span>
       </label>

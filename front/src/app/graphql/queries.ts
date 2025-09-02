@@ -92,3 +92,19 @@ export const ADD_COMMENT = gql`
 
 export type AddCommentVars = { id: number; content: string };
 export type AddCommentData = { addComment: Comment };
+
+export const SOFT_DELETE = gql`
+  mutation SoftDelete($id: Int!) {
+    softDeleteCharacter(id: $id)
+  }
+`;
+export type SoftDeleteVars = { id: number };
+export type SoftDeleteData = { softDeleteCharacter: boolean };
+
+export const RESTORE_CHARACTER = gql`
+  mutation Restore($id: Int!) {
+    restoreCharacter(id: $id)
+  }
+`;
+export type RestoreVars = { id: number };
+export type RestoreData = { restoreCharacter: boolean };

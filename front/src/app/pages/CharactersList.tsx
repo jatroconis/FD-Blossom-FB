@@ -8,6 +8,7 @@ import {
   type GetCharactersVars,
   type Character,
 } from "../graphql/queries";
+import { CardSkeleton } from "../components/skeletons";
 import { useQuery } from "@apollo/client/react";
 
 export default function CharactersList() {
@@ -67,13 +68,11 @@ export default function CharactersList() {
 
       <FilterBar value={filters} onChange={setFilters} />
 
-      {loading && <p className="text-sm text-zinc-500">Cargando…</p>}
-      {error && (
-        <p className="text-sm text-red-600">
-          Error al cargar: {error.message}
-          <br />Endpoint: {import.meta.env.VITE_API_URL}
-        </p>
-      )}
+        {loading && (
+    <div className="grid gap-4 grid-cols-[repeat(auto-fill,minmax(220px,1fr))]">
+      {Array.from({ length: 8 }).map((_, i) => <CardSkeleton key={i} />)}
+    </div>
+  )}
 
       {!loading && !error && sorted.length === 0 && (
         <div className="rounded-xl border bg-white p-6 text-center text-zinc-600">
@@ -81,11 +80,20 @@ export default function CharactersList() {
         </div>
       )}
 
-      <div className="grid gap-4 grid-cols-[repeat(auto-fill,minmax(220px,1fr))]">
-        {sorted.map((c) => (
-          <CharacterCard key={c.id} {...c} />
-        ))}
-      </div>
+      {!loading && !error && (
+        <div className="grid gap-4 grid-cols-[repeat(auto-fill,minmax(220px,1fr))]">
+          {sorted.map((c) => (
+            <CharacterCard key={c.id} {...c} />
+          ))}
+        </div>
+      )}
+
+      {error && (
+        <div className="rounded-xl border border-red-200 bg-red-50 p-4 text-red-700">
+          <p className="font-medium">Error al cargar</p>
+          <p className="text-sm mt-1">{error.message}</p>
+        </div>
+      )}
     </section>
   );
 }
