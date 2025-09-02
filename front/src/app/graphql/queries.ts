@@ -1,8 +1,8 @@
 import { gql } from "@apollo/client";
 
 export const GET_CHARACTERS = gql`
-  query GetCharacters {
-    characters {
+  query GetCharacters($filter: CharacterFilter) {
+    characters(filter: $filter) {
       id
       name
       species
@@ -25,7 +25,23 @@ export type Character = {
   image?: string | null;
   isFavorite?: boolean | null;
 };
-export type GetCharactersData = { characters: Character[] };
+
+export type CharacterFilterInput = {
+  name?: string;
+  status?: string;
+  species?: string;
+  gender?: string;
+  origin?: string;
+  favorite?: boolean;
+};
+
+export type GetCharactersVars = {
+  filter?: CharacterFilterInput;
+};
+
+export type GetCharactersData = {
+  characters: Character[];
+};
 
 // ---- Favoritos
 export const TOGGLE_FAVORITE = gql`
